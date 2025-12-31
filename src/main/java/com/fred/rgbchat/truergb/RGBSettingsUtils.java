@@ -3,6 +3,8 @@ package com.fred.rgbchat.truergb;
 import net.minecraft.util.Tuple;
 import net.minecraft.util.text.TextFormatting;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -10,9 +12,12 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.stream.Collectors;
 
+/**
+ * @author Kasumi_Nova
+ * @see <a href="https://github.com/NovaEngineering-Source/StellarCore/blob/47477615e390eed9a55c140e8af57f8cf209da70/src/main/java/github/kasuminova/stellarcore/client/gui/font/RGBSettingsUtils.java">GitHub</a>
+ */
 public class RGBSettingsUtils {
-
-    public static List<Tuple<String, String>> splitRGBAndContents(String str) {
+    public static @Nonnull List<Tuple<String, String>> splitRGBAndContents(@Nullable String str) {
         if (str != null && !str.isEmpty()) {
             List<Tuple<String, String>> result = new ArrayList<>();
             Matcher matcher = RGBSettings.PATTERN.matcher(str);
@@ -54,7 +59,7 @@ public class RGBSettingsUtils {
         }
     }
 
-    public static String serializeRGBSettings(RGBSettings rgbSettings) {
+    public static @Nonnull String serializeRGBSettings(@Nonnull RGBSettings rgbSettings) {
         StringBuilder result = new StringBuilder();
 
         // Serialize colors
@@ -89,5 +94,4 @@ public class RGBSettingsUtils {
 
         return result.toString();
     }
-
 }

@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.1] - 2025-12-31
+
+### Changed
+- Fix texts invisible when not Unicode.
+- Fix bold texts' width calculated wrongly, which also makes their centered pos true.
+- Fix 1px pos issue for colored texts.
+- Sync pattern change in original version 0.2.
+- Add license headers to code from StellarCore.
+- Switch back to RFG since Unimined removed all comments in MCP.
+
 ## [1.0] - 2025-10-03
 
 ### Changed

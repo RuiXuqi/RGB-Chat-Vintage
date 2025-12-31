@@ -23,6 +23,13 @@ public enum FormatColor implements IColor {
 
     private final TextFormatting formatting;
 
+    FormatColor(TextFormatting formatting) {
+        if (!formatting.isColor()) {
+            throw new IllegalArgumentException(formatting.getFriendlyName());
+        }
+        this.formatting = formatting;
+    }
+
     public static FormatColor of(char index) {
         return FormatColor.of("0123456789abcdef".indexOf(Character.toLowerCase(index)));
     }
@@ -36,13 +43,6 @@ public enum FormatColor implements IColor {
             return FormatColor.values()[index];
         }
         return WHITE;
-    }
-
-    FormatColor(TextFormatting formatting) {
-        if (!formatting.isColor()) {
-            throw new IllegalArgumentException(formatting.getFriendlyName());
-        }
-        this.formatting = formatting;
     }
 
     public TextFormatting getFormatting() {

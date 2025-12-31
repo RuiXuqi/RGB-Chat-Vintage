@@ -16,8 +16,73 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class RGBSettings {
-    public static RGBSettings EMPTY;
-    public static final Pattern PATTERN;
+    public static final RGBSettings EMPTY = new RGBSettings(Collections.emptyList()) {
+        @Nullable
+        @Override
+        public IColor getColorAt(final int index) {
+            return null;
+        }
+
+        @Override
+        public int getLength() {
+            return 0;
+        }
+
+        @Override
+        public void addLength(final int toAdd) {
+        }
+
+        @Override
+        public void setBold(final Boolean bold) {
+        }
+
+        @Override
+        public void setItalic(final Boolean italic) {
+        }
+
+        @Override
+        public void setUnderlined(final Boolean underlined) {
+        }
+
+        @Override
+        public void setStrikethrough(final Boolean strikethrough) {
+        }
+
+        @Override
+        public void setObfuscated(final Boolean obfuscated) {
+        }
+
+        @Nullable
+        @Override
+        public Boolean getBold() {
+            return null;
+        }
+
+        @Nullable
+        @Override
+        public Boolean getItalic() {
+            return null;
+        }
+
+        @Nullable
+        @Override
+        public Boolean getUnderlined() {
+            return null;
+        }
+
+        @Nullable
+        @Override
+        public Boolean getStrikethrough() {
+            return null;
+        }
+
+        @Nullable
+        @Override
+        public Boolean getObfuscated() {
+            return null;
+        }
+    };
+    public static final Pattern PATTERN = Pattern.compile("(#(?<rgb>([0-9a-fA-F]{6})(-([0-9a-fA-F]{6}))*)|§(?<format>[0-9a-fA-FklmnorKLMNOR]))");
     private final List<IColor> colors;
     private int length;
     private Boolean bold;
@@ -25,6 +90,14 @@ public class RGBSettings {
     private Boolean underlined;
     private Boolean strikethrough;
     private Boolean obfuscated;
+
+    public RGBSettings(final IColor color) {
+        this(Collections.singletonList(color));
+    }
+
+    public RGBSettings(final List<IColor> colors) {
+        this.colors = colors;
+    }
 
     public static List<Tuple<String, RGBSettings>> split(final String string) {
         if (string == null || string.isEmpty()) {
@@ -65,14 +138,6 @@ public class RGBSettings {
             index = matcher.end();
         }
         return result;
-    }
-
-    public RGBSettings(final IColor color) {
-        this(Collections.singletonList(color));
-    }
-
-    public RGBSettings(final List<IColor> colors) {
-        this.colors = colors;
     }
 
     protected int warpIndex(final int index) {
@@ -194,71 +259,6 @@ public class RGBSettings {
                 .collect(Collectors.joining());
     }
 
-    static {
-        RGBSettings.EMPTY = new RGBSettings(Collections.emptyList()) {
-            @Nullable
-            @Override
-            public IColor getColorAt(final int index) {
-                return null;
-            }
-
-            @Override
-            public int getLength() {
-                return 0;
-            }
-
-            @Override
-            public void addLength(final int toAdd) {
-            }
-
-            @Override
-            public void setBold(final Boolean bold) {
-            }
-
-            @Override
-            public void setItalic(final Boolean italic) {
-            }
-
-            @Override
-            public void setUnderlined(final Boolean underlined) {
-            }
-
-            @Override
-            public void setStrikethrough(final Boolean strikethrough) {
-            }
-
-            @Override
-            public void setObfuscated(final Boolean obfuscated) {
-            }
-
-            @Override
-            public Boolean getBold() {
-                return null;
-            }
-
-            @Override
-            public Boolean getItalic() {
-                return null;
-            }
-
-            @Override
-            public Boolean getUnderlined() {
-                return null;
-            }
-
-            @Override
-            public Boolean getStrikethrough() {
-                return null;
-            }
-
-            @Override
-            public Boolean getObfuscated() {
-                return null;
-            }
-        };
-        PATTERN = Pattern.compile("(#(?<rgb>([0-9a-fA-F]{6})(-([0-9a-fA-F]{6}))*)|§(?<format>[0-9a-fA-FklmnorKLMNOR]))");
-    }
-
     private static class WithFormat extends RGBSettings {
         private final RGBSettings parent;
         private final int startIndex;
@@ -322,27 +322,27 @@ public class RGBSettings {
 
         @Override
         public Boolean getBold() {
-            return this.getFlag(RGBSettings::getBold);
+            return this.getFlag((rgbSettings) -> rgbSettings.bold);
         }
 
         @Override
         public Boolean getItalic() {
-            return this.getFlag(RGBSettings::getItalic);
+            return this.getFlag((rgbSettings) -> rgbSettings.italic);
         }
 
         @Override
         public Boolean getUnderlined() {
-            return this.getFlag(RGBSettings::getUnderlined);
+            return this.getFlag((rgbSettings) -> rgbSettings.underlined);
         }
 
         @Override
         public Boolean getStrikethrough() {
-            return this.getFlag(RGBSettings::getStrikethrough);
+            return this.getFlag((rgbSettings) -> rgbSettings.strikethrough);
         }
 
         @Override
         public Boolean getObfuscated() {
-            return this.getFlag(RGBSettings::getObfuscated);
+            return this.getFlag((rgbSettings) -> rgbSettings.obfuscated);
         }
     }
 }
