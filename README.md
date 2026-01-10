@@ -1,51 +1,21 @@
-A fork of Joy187's mod RGB Chat.
+# RGB Chat Vintage
 
-The upstream repo keeps version 0.1, so the fork is based on 0.1, which only has RGB text features. All the blocks and items are removed.
+A fork of [joyscar's RGB Chat mod](https://github.com/BitbanChou/RGB-Chat), focusing on rgb text feature.
 
-Also, the modid is changed to 'rgbchat'.
+## What's changed?
 
-# RGB-Chat
+- A better font renderer by great Kasumi_Nova.
+- Some minor issues like width calculation have been fixed.
+- All the blocks and items, which are surprisingly client side only, have been removed.
+- All the other features are not exist, since joyscar did not release the source code for version 0.2 and above.
+- Mod ID has been changed to "rgbchat".
 
-## RGB Chat allows player to use gradient color text in chat、editing words.
+## Usage
 
-### There are two types of Hex color you can input，every Hex color is total 8 digits[A(alpha)R(red)G(green)B(blue)]：
-#### 1.single color
-Input format
-```
-#ARGByour text
-```
-example
-```
-#FFB0E0E6ABCDEFG一闪一闪小星星
-```
-![bluew.png](https://cdn.acwing.com/media/article/image/2022/11/15/39383_c7227b4c64-bluew.png) 
-#### 2.gradient color
-Input format (from color A to color B, then follows words)
-```
-#ARGB-ARGByour text
-```
-example
-```
-#FFFF69B4-FFFFF0B4Hello World!
-```
-![cco.jpg](https://cdn.acwing.com/media/article/image/2022/11/15/39383_0370eb9f64-cco.jpg) 
-##### well, you can use a combination of them：
-```
-#11320004-FF32FF04ABCDEFGHILJK#FF32FF04-11320004LMNOPRSTVUWXYZ
-```
-![colormix.jpg](https://cdn.acwing.com/media/article/image/2022/11/15/39383_c878404b64-colormix.jpg) 
+Should be the same as the rgb text format in original 0.2 version. Check the original's page.
 
-### Expansion
+## License?
 
-#### you can create colored name item through Anvil：
-![pick2.jpg](https://cdn.acwing.com/media/article/image/2022/11/15/39383_72e5600964-pick2.jpg)
+While the original mod on CurseForge is marked as "All Rights Reserved," the author (joyscar) released the version 0.1 source code on GitHub under the MIT license.
 
-#### colored entity name：
-![name tag.jpg](https://cdn.acwing.com/media/article/image/2022/11/15/39383_fc3038d164-name-tag.jpg) 
-
-#### make your sign words more colorful：
-![cnnk.jpg](https://cdn.acwing.com/media/article/image/2022/11/15/39383_1527dba064-cnnk.jpg) 
-
-### usage
-#### put the jar file into your mods folder：
-![rgbplace.jpg](https://cdn.acwing.com/media/article/image/2022/11/15/39383_5c286f9164-rgbplace.jpg) 
+This fork is licensed under LGPL-3.0, as it merged the optimized font renderer from[StellarCore](https://github.com/NovaEngineering-Source/StellarCore), which is also licensed under LGPL-3.0.
