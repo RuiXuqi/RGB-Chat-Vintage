@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.0] - 2026-05-02
+
+### Changed
+- Code refactor, clean up tons of things.
+- Fix text components losing RGB after wrapping.
+- Add a configuration to control the display of RGB formatting code.
+
 ## [1.1] - 2025-12-31
 
 ### Changed

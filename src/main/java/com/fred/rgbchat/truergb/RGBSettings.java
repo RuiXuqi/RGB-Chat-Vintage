@@ -1,348 +1,123 @@
 package com.fred.rgbchat.truergb;
 
-import net.minecraft.util.Tuple;
+import com.fred.rgbchat.truergb.color.FormatColor;
+import com.fred.rgbchat.truergb.color.IColor;
+import com.fred.rgbchat.truergb.color.SimpleColor;
 import net.minecraft.util.text.TextFormatting;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.function.Function;
-import java.util.function.ToIntFunction;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class RGBSettings {
-    public static final RGBSettings EMPTY = new RGBSettings(Collections.emptyList()) {
-        @Nullable
-        @Override
-        public IColor getColorAt(final int index) {
-            return null;
-        }
-
-        @Override
-        public int getLength() {
-            return 0;
-        }
-
-        @Override
-        public void addLength(final int toAdd) {
-        }
-
-        @Override
-        public void setBold(final Boolean bold) {
-        }
-
-        @Override
-        public void setItalic(final Boolean italic) {
-        }
-
-        @Override
-        public void setUnderlined(final Boolean underlined) {
-        }
-
-        @Override
-        public void setStrikethrough(final Boolean strikethrough) {
-        }
-
-        @Override
-        public void setObfuscated(final Boolean obfuscated) {
-        }
-
-        @Nullable
-        @Override
-        public Boolean getBold() {
-            return null;
-        }
-
-        @Nullable
-        @Override
-        public Boolean getItalic() {
-            return null;
-        }
-
-        @Nullable
-        @Override
-        public Boolean getUnderlined() {
-            return null;
-        }
-
-        @Nullable
-        @Override
-        public Boolean getStrikethrough() {
-            return null;
-        }
-
-        @Nullable
-        @Override
-        public Boolean getObfuscated() {
-            return null;
-        }
-    };
     public static final Pattern PATTERN = Pattern.compile("(#(?<rgb>([0-9a-fA-F]{6})(-([0-9a-fA-F]{6}))*)|§(?<format>[0-9a-fA-FklmnorKLMNOR]))");
+    public static final RGBSettings EMPTY = new RGBSettings(Collections.emptyList(), false, false, false, false, false);
     private final List<IColor> colors;
-    private int length;
-    private Boolean bold;
-    private Boolean italic;
-    private Boolean underlined;
-    private Boolean strikethrough;
-    private Boolean obfuscated;
+    private final boolean bold;
+    private final boolean italic;
+    private final boolean underlined;
+    private final boolean strikethrough;
+    private final boolean obfuscated;
 
-    public RGBSettings(final IColor color) {
-        this(Collections.singletonList(color));
-    }
-
-    public RGBSettings(final List<IColor> colors) {
+    private RGBSettings(List<IColor> colors, boolean bold, boolean italic, boolean underlined, boolean strikethrough, boolean obfuscated) {
         this.colors = colors;
+        this.bold = bold;
+        this.italic = italic;
+        this.underlined = underlined;
+        this.strikethrough = strikethrough;
+        this.obfuscated = obfuscated;
     }
 
-    public static List<Tuple<String, RGBSettings>> split(final String string) {
-        if (string == null || string.isEmpty()) {
-            return Collections.singletonList(new Tuple<>("", RGBSettings.EMPTY));
-        }
-        int index = 0;
-        final List<Tuple<String, RGBSettings>> result = new ArrayList<>();
-        final Matcher matcher = RGBSettings.PATTERN.matcher(string);
-        RGBSettings lastSettings = RGBSettings.EMPTY;
-        while (index < string.length()) {
-            if (!matcher.find(index)) {
-                final String subString = string.substring(index);
-                lastSettings.addLength(subString.length());
-                result.add(new Tuple<>(subString, lastSettings));
-                break;
-            }
-            final String subString = string.substring(index, matcher.start());
-            if (!subString.isEmpty()) {
-                lastSettings.addLength(subString.length());
-                result.add(new Tuple<>(subString, lastSettings));
-            }
-            final String format = matcher.group();
-            if (format.startsWith("#")) {
-                final String fString = matcher.group("rgb");
-                lastSettings = new RGBSettings(Arrays.stream(fString.split("-"))
-                        .map(Colors::of)
-                        .collect(Collectors.toList()));
-            } else {
-                if (!format.startsWith("§")) {
-                    throw new IllegalStateException("Format: " + format);
-                }
-                final TextFormatting formatting = Utils.formattingOf(format.charAt(1));
-                if (formatting == null) {
-                    throw new NullPointerException("Format: " + format);
-                }
-                lastSettings = lastSettings.withFormat(formatting);
-            }
-            index = matcher.end();
-        }
-        return result;
+    public RGBSettings withColors(IColor newColor) {
+        return new RGBSettings(Collections.singletonList(newColor), false, false, false, false, false);
     }
 
-    protected int warpIndex(final int index) {
-        return index;
+    public RGBSettings withColors(List<IColor> newColors) {
+        return new RGBSettings(newColors, false, false, false, false, false);
     }
 
-    @Nullable
-    public IColor getColorAt(final int index) {
-        final int colorsLength = this.colors.size();
-        if (colorsLength == 0) {
-            return null;
-        }
-        if (colorsLength == 1) {
-            return this.colors.get(0);
-        }
-        final int warpedIndex = this.warpIndex(index);
-        final int preIndex = Math.max(0, Math.min(colorsLength - 1, (colorsLength - 1) * warpedIndex / Math.max(1, this.getLength() - 1)));
-        final int postIndex = Math.max(0, Math.min(colorsLength - 1, preIndex + 1));
-        float percent;
-        if (preIndex == postIndex) {
-            percent = 0.0f;
-        } else {
-            percent = Math.max(0.0f, Math.min(1.0f, (warpedIndex * (colorsLength - 1) - this.getLength() * preIndex) / ((postIndex - preIndex) * (float) this.getLength())));
-        }
-        final IColor pre = this.colors.get(preIndex);
-        final IColor post = this.colors.get(postIndex);
-        if (pre.equals(post)) {
-            return pre;
-        }
+    public RGBSettings withFormat(TextFormatting formatting) {
+        if (formatting.isColor()) return this.withColors(FormatColor.of(formatting));
+        if (formatting == TextFormatting.RESET) return EMPTY;
 
-        final ToIntFunction<ToIntFunction<IColor>> mix = toIni -> Math.round(toIni.applyAsInt(pre) * (1.0f - percent) + toIni.applyAsInt(post) * percent);
-        return new SimpleColor(mix.applyAsInt(IColor::red), mix.applyAsInt(IColor::green), mix.applyAsInt(IColor::blue));
-    }
-
-    public RGBSettings withFormat(final TextFormatting formatting) {
-        if (formatting.isColor()) {
-            return new RGBSettings(Colors.of(formatting));
-        }
-        if (formatting.isFancyStyling()) {
-            return new WithFormat(this, formatting);
-        }
-        if (formatting == TextFormatting.RESET) {
-            return RGBSettings.EMPTY;
-        }
-        throw new IllegalStateException(formatting.toString());
-    }
-
-    public List<IColor> getColors() {
-        return this.colors;
+        boolean newBold = formatting == TextFormatting.BOLD || this.bold;
+        boolean newItalic = formatting == TextFormatting.ITALIC || this.italic;
+        boolean newUnderline = formatting == TextFormatting.UNDERLINE || this.underlined;
+        boolean newStrike = formatting == TextFormatting.STRIKETHROUGH || this.strikethrough;
+        boolean newObfuscated = formatting == TextFormatting.OBFUSCATED || this.obfuscated;
+        return new RGBSettings(this.colors, newBold, newItalic, newUnderline, newStrike, newObfuscated);
     }
 
     public boolean isFixedColor() {
         return this.colors.size() <= 1;
     }
 
-    public int getLength() {
-        return this.length;
+    @Nonnull
+    public List<IColor> getColors() {
+        return this.colors;
     }
 
-    public void addLength(final int toAdd) {
-        this.length += toAdd;
-    }
-
-    public void setBold(final Boolean bold) {
-        this.bold = bold;
-    }
-
-    public void setItalic(final Boolean italic) {
-        this.italic = italic;
-    }
-
-    public void setUnderlined(final Boolean underlined) {
-        this.underlined = underlined;
-    }
-
-    public void setStrikethrough(final Boolean strikethrough) {
-        this.strikethrough = strikethrough;
-    }
-
-    public void setObfuscated(final Boolean obfuscated) {
-        this.obfuscated = obfuscated;
-    }
-
-    public Boolean getFormatState(final TextFormatting formatting) {
-        return switch (formatting) {
-            case BOLD -> this.getBold();
-            case ITALIC -> this.getItalic();
-            case UNDERLINE -> this.getUnderlined();
-            case STRIKETHROUGH -> this.getStrikethrough();
-            case OBFUSCATED -> this.getObfuscated();
-            default -> null;
-        };
-    }
-
-    public Boolean getBold() {
-        return this.bold;
-    }
-
-    public Boolean getItalic() {
-        return this.italic;
-    }
-
-    public Boolean getUnderlined() {
-        return this.underlined;
-    }
-
-    public Boolean getStrikethrough() {
-        return this.strikethrough;
-    }
-
-    public Boolean getObfuscated() {
-        return this.obfuscated;
-    }
-
+    @Nonnull
     public String getFormatString() {
-        return Stream.of(TextFormatting.BOLD, TextFormatting.ITALIC, TextFormatting.UNDERLINE, TextFormatting.STRIKETHROUGH, TextFormatting.OBFUSCATED)
-                .filter(formatting -> this.getFormatState(formatting) == Boolean.TRUE)
-                .map(TextFormatting::toString)
-                .collect(Collectors.joining());
+        StringBuilder result = new StringBuilder(10);
+        if (this.bold) result.append(TextFormatting.BOLD);
+        if (this.italic) result.append(TextFormatting.ITALIC);
+        if (this.underlined) result.append(TextFormatting.UNDERLINE);
+        if (this.strikethrough) result.append(TextFormatting.STRIKETHROUGH);
+        if (this.obfuscated) result.append(TextFormatting.OBFUSCATED);
+        return result.toString();
     }
 
-    private static class WithFormat extends RGBSettings {
-        private final RGBSettings parent;
-        private final int startIndex;
+    @Nonnull
+    public String getColorString() {
+        StringBuilder result = new StringBuilder();
+        boolean hasColor = false;
+        for (IColor color : this.colors) {
+            result.append(hasColor ? '-' : '#');
+            appendHexColor(result, color.toInt());
+            hasColor = true;
+        }
+        return result.toString();
+    }
 
-        public WithFormat(final RGBSettings parent) {
-            super(parent.colors);
-            this.parent = parent;
-            this.startIndex = parent.getLength();
+    @Nonnull
+    public String getColorAndFormatString() {
+        return this.getColorString() + this.getFormatString();
+    }
+
+    @Nullable
+    static TextFormatting formattingOf(char c) {
+        int index = "0123456789abcdefklmnor".indexOf(Character.toLowerCase(c));
+        return index < 0 ? null : TextFormatting.values()[index];
+    }
+
+    @Nonnull
+    static List<IColor> parseColors(String rgbList) {
+        if (rgbList.indexOf('-') < 0) {
+            return Collections.singletonList(SimpleColor.of(rgbList));
         }
 
-        public WithFormat(final RGBSettings parent, final TextFormatting... formattingArray) {
-            this(parent);
-            for (final TextFormatting formatting : formattingArray) {
-                switch (formatting) {
-                    case OBFUSCATED: {
-                        this.setObfuscated(true);
-                        break;
-                    }
-                    case BOLD: {
-                        this.setBold(true);
-                        break;
-                    }
-                    case STRIKETHROUGH: {
-                        this.setStrikethrough(true);
-                        break;
-                    }
-                    case UNDERLINE: {
-                        this.setUnderlined(true);
-                        break;
-                    }
-                    case ITALIC: {
-                        this.setItalic(true);
-                        break;
-                    }
-                }
-            }
-        }
+        List<IColor> result = new ArrayList<>();
+        int index = 0;
+        while (index <= rgbList.length()) {
+            int nextDelimiter = rgbList.indexOf('-', index);
+            boolean hasDelimiter = nextDelimiter >= 0;
+            result.add(SimpleColor.of(hasDelimiter ? rgbList.substring(index, nextDelimiter) : rgbList.substring(index)));
 
-        @Override
-        protected int warpIndex(final int index) {
-            return this.startIndex + index;
+            if (!hasDelimiter) break;
+            index = nextDelimiter + 1;
         }
+        return result;
+    }
 
-        @Override
-        public void addLength(final int toAdd) {
-            this.parent.addLength(toAdd);
-        }
+    private static final char[] HEX_DIGITS = "0123456789ABCDEF".toCharArray();
 
-        @Override
-        public int getLength() {
-            return this.parent.getLength();
-        }
-
-        private Boolean getFlag(Function<RGBSettings, Boolean> getter) {
-            final Boolean flag = getter.apply(this);
-            if (flag == null) {
-                return getter.apply(this.parent);
-            }
-            return flag;
-        }
-
-        @Override
-        public Boolean getBold() {
-            return this.getFlag((rgbSettings) -> rgbSettings.bold);
-        }
-
-        @Override
-        public Boolean getItalic() {
-            return this.getFlag((rgbSettings) -> rgbSettings.italic);
-        }
-
-        @Override
-        public Boolean getUnderlined() {
-            return this.getFlag((rgbSettings) -> rgbSettings.underlined);
-        }
-
-        @Override
-        public Boolean getStrikethrough() {
-            return this.getFlag((rgbSettings) -> rgbSettings.strikethrough);
-        }
-
-        @Override
-        public Boolean getObfuscated() {
-            return this.getFlag((rgbSettings) -> rgbSettings.obfuscated);
+    private static void appendHexColor(StringBuilder result, int rgb) {
+        for (int shift = 20; shift >= 0; shift -= 4) {
+            result.append(HEX_DIGITS[(rgb >> shift) & 0x0F]);
         }
     }
 }

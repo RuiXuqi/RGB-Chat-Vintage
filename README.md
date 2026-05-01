@@ -12,7 +12,9 @@ A fork of [joyscar's RGB Chat mod](https://github.com/BitbanChou/RGB-Chat), focu
 
 ## Usage
 
-Should be the same as the rgb text format in original 0.2 version. Check the original's page.
+After version 2.0, the mod needs [MixinBooter](https://github.com/CleanroomMC/MixinBooter) to work. 
+
+The text pattern should be the same as the rgb text format in original 0.2 version. Check the original's page.
 
 ## License?
 

@@ -1,4 +1,4 @@
-package com.fred.rgbchat.truergb;
+package com.fred.rgbchat.truergb.color;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.text.TextFormatting;
@@ -31,27 +31,22 @@ public enum FormatColor implements IColor {
     }
 
     public static FormatColor of(char index) {
-        return FormatColor.of("0123456789abcdef".indexOf(Character.toLowerCase(index)));
+        return of("0123456789abcdef".indexOf(Character.toLowerCase(index)));
     }
 
     public static FormatColor of(TextFormatting formatting) {
-        return FormatColor.of(formatting.getColorIndex());
+        return of(formatting.getColorIndex());
     }
 
     public static FormatColor of(int index) {
         if (index >= 0 && index <= 15) {
-            return FormatColor.values()[index];
+            return values()[index];
         }
         return WHITE;
     }
 
     public TextFormatting getFormatting() {
         return this.formatting;
-    }
-
-    @Override
-    public int alpha() {
-        return 255;
     }
 
     @Override
@@ -71,10 +66,5 @@ public enum FormatColor implements IColor {
 
     public int getColorCode() {
         return Minecraft.getMinecraft().fontRenderer.getColorCode("0123456789abcdef".charAt(this.formatting.getColorIndex()));
-    }
-
-    @Override
-    public int toInt() {
-        return 0xFF000000 | this.getColorCode();
     }
 }
