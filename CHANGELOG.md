@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.1] - 2026-05-02
+
+### Changed
+- Add `VANILLA` display mode, in which text will be rendered same as mod uninstalled.
+- Mod now only handles RGB text wrapping, preventing long texts from crashing the game.
+
 ## [2.0] - 2026-05-02
 
 ### Changed

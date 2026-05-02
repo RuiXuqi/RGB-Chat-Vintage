@@ -14,6 +14,7 @@ import net.minecraft.util.ResourceLocation;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
+import java.util.regex.Matcher;
 
 /**
  * 带有缓存的字体渲染器，来自星核.
@@ -92,6 +93,12 @@ public class CachedRGBFontRenderer extends FontRenderer {
             return this.fastDrawString(x, y, dropShadow, cachedRenderFunction);
         }
 
+        if (displayMode == DisplayMode.VANILLA) {
+            cachedRenderFunction.add((_y, _dropShadow) -> super.drawString(text, this.posX, _y, color, _dropShadow));
+            TEXT_RENDER_CACHE.put(textRenderInfo, cachedRenderFunction);
+            return this.fastDrawString(x, y, dropShadow, cachedRenderFunction);
+        }
+
         if (displayMode == DisplayMode.CHAR_BY_CHAR) {
             for (int i = 0; i < text.length(); ++i) {
                 String toRender = String.valueOf(text.charAt(i));
@@ -151,6 +158,10 @@ public class CachedRGBFontRenderer extends FontRenderer {
             return super.getStringWidth(RGBTextUtils.stripRGB(text));
         }
 
+        if (displayMode == DisplayMode.VANILLA) {
+            return super.getStringWidth(text);
+        }
+
         if (displayMode == DisplayMode.CHAR_BY_CHAR) {
             int maxWidth = 0;
             int currentWidth = 0;
@@ -193,8 +204,28 @@ public class CachedRGBFontRenderer extends FontRenderer {
             return cachedListed;
         }
 
+        if (displayMode == DisplayMode.VANILLA) {
+            cachedListed = super.listFormattedStringToWidth(content, wrapWidth);
+            LISTED_CACHE.put(wrapInfo, cachedListed);
+            return cachedListed;
+        }
+
         if (displayMode == DisplayMode.CHAR_BY_CHAR) {
             cachedListed = this.listCharByCharToWidth(content, wrapWidth);
+            LISTED_CACHE.put(wrapInfo, cachedListed);
+            return cachedListed;
+        }
+
+        boolean hasRgbTag = false;
+        Matcher matcher = RGBSettings.PATTERN.matcher(content);
+        while (matcher.find()) {
+            if (matcher.group("rgb") != null) {
+                hasRgbTag = true;
+                break;
+            }
+        }
+        if (!hasRgbTag) {
+            cachedListed = super.listFormattedStringToWidth(content, wrapWidth);
             LISTED_CACHE.put(wrapInfo, cachedListed);
             return cachedListed;
         }

@@ -81,6 +81,8 @@ public final class RGBTextUtils {
                     char expected = currentSegment.charAt(segmentIndex);
                     char actual = line.charAt(lineIndex);
                     if (expected != actual) {
+                        sb.append(line.substring(lineIndex));
+                        lineIndex = line.length();
                         break;
                     }
 
